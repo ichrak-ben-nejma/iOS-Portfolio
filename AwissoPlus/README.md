@@ -17,20 +17,20 @@ It provides insightful sales and order statistics, helping businesses track perf
 ## Technologies & Tools
 - SwiftUI
 - MVVM Architecture
-- URLSession / Alamofire (choose the one you used)
-- UserDefaults (persistent user preferences)
+- Alamofire
+- UserDefaults
 - Custom Charts Library
 - Custom Calendar Component
 - Lottie Animations
 - Customerly (Live Chat SDK)
 
 ## My Contribution
-- Designed and implemented SwiftUI user interfaces
+- Implemented SwiftUI user interfaces based on provided designs
+- Integrated backend REST APIs for orders, analytics, and statistics
 - Built custom chart components for data visualization
-- Integrated REST APIs for orders and analytics
-- Implemented MVVM architecture for scalable code
+- Managed app state using MVVM architecture
 - Added animations and live chat support
-- Ensured smooth user experience and performance
+- Ensured smooth user experience and performance optimization
 
 ## Screenshots
 See the `Screenshots/` folder
