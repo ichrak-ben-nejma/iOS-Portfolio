@@ -1,74 +1,1372 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Ichrak | iOS Developer</title>
-  <style>
-    body {
-      font-family: Arial;
-      margin: 0;
-      background: #0f172a;
-      color: white;
-    }
-    .container {
-      max-width: 900px;
-      margin: auto;
-      padding: 60px 20px;
-    }
-    h1 {
-      font-size: 40px;
-    }
-    .subtitle {
-      color: #94a3b8;
-      margin-bottom: 30px;
-    }
-    .card {
-      background: #1e293b;
-      padding: 20px;
-      border-radius: 12px;
-      margin-top: 20px;
-    }
-    .tag {
-      display: inline-block;
-      background: #2563eb;
-      padding: 5px 10px;
-      border-radius: 6px;
-      font-size: 12px;
-      margin-right: 5px;
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ichrak Ben Nejma — iOS SwiftUI Developer</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F8F6F1;
+    --bg2: #EFECE4;
+    --bg3: #E8E3D8;
+    --ink: #1A1714;
+    --ink2: #3D3830;
+    --ink3: #7A7468;
+    --accent: #E8450A;
+    --accent2: #FF6B35;
+    --gold: #C9A84C;
+    --swift: #F05138;
+    --card: #FFFFFF;
+    --border: rgba(26,23,20,0.09);
+    --shadow: 0 2px 40px rgba(26,23,20,0.08);
+    --shadow-lg: 0 8px 60px rgba(26,23,20,0.12);
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--ink);
+    overflow-x: hidden;
+    cursor: none;
+  }
+
+  /* CUSTOM CURSOR */
+  .cursor {
+    position: fixed; top: 0; left: 0;
+    width: 12px; height: 12px;
+    background: var(--accent);
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 9999;
+    transition: transform 0.15s ease, background 0.2s ease;
+    transform: translate(-50%, -50%);
+  }
+  .cursor-ring {
+    position: fixed; top: 0; left: 0;
+    width: 36px; height: 36px;
+    border: 1.5px solid var(--accent);
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 9998;
+    transition: transform 0.35s cubic-bezier(.16,.84,.44,1), width 0.3s, height 0.3s, opacity 0.3s;
+    transform: translate(-50%, -50%);
+    opacity: 0.5;
+  }
+  .cursor-ring.expand { width: 60px; height: 60px; opacity: 0.25; }
+
+  /* NOISE TEXTURE OVERLAY */
+  body::before {
+    content: '';
+    position: fixed; inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 1000;
+    opacity: 0.4;
+  }
+
+  /* NAV */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0;
+    z-index: 100;
+    padding: 0 6vw;
+    height: 72px;
+    display: flex; align-items: center; justify-content: space-between;
+    background: rgba(248,246,241,0.85);
+    backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--border);
+    animation: fadeDown 0.8s ease both;
+  }
+  @keyframes fadeDown { from { opacity:0; transform: translateY(-20px); } to { opacity:1; transform:none; } }
+
+  .nav-logo {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.1rem;
+    font-weight: 600;
+    letter-spacing: 0.01em;
+    color: var(--ink);
+  }
+  .nav-logo span { color: var(--accent); }
+
+  .nav-links {
+    display: flex; gap: 2.5rem; list-style: none;
+  }
+  .nav-links a {
+    font-size: 0.8rem; font-weight: 500;
+    text-transform: uppercase; letter-spacing: 0.12em;
+    color: var(--ink3);
+    text-decoration: none;
+    position: relative;
+    transition: color 0.2s;
+  }
+  .nav-links a::after {
+    content: ''; position: absolute; bottom: -3px; left: 0; right: 0;
+    height: 1px; background: var(--accent);
+    transform: scaleX(0); transform-origin: left;
+    transition: transform 0.25s ease;
+  }
+  .nav-links a:hover { color: var(--ink); }
+  .nav-links a:hover::after { transform: scaleX(1); }
+
+  .nav-cta {
+    font-size: 0.75rem; font-weight: 600;
+    text-transform: uppercase; letter-spacing: 0.1em;
+    padding: 10px 22px;
+    background: var(--ink);
+    color: var(--bg) !important;
+    border-radius: 2px;
+    text-decoration: none;
+    transition: background 0.2s, color 0.2s !important;
+  }
+  .nav-cta:hover { background: var(--accent) !important; }
+  .nav-cta::after { display: none !important; }
+
+  /* HERO */
+  .hero {
+    min-height: 100vh;
+    padding: 140px 6vw 80px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4rem;
+    align-items: center;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero-bg-shape {
+    position: absolute;
+    top: -100px; right: -100px;
+    width: 600px; height: 600px;
+    background: radial-gradient(circle at 60% 40%, rgba(232,69,10,0.07) 0%, transparent 70%);
+    border-radius: 50%;
+    animation: pulse 8s ease-in-out infinite;
+  }
+  .hero-bg-shape2 {
+    position: absolute;
+    bottom: -50px; left: 10%;
+    width: 400px; height: 400px;
+    background: radial-gradient(circle, rgba(201,168,76,0.06) 0%, transparent 70%);
+    border-radius: 50%;
+    animation: pulse 10s ease-in-out infinite reverse;
+  }
+  @keyframes pulse { 0%,100%{transform:scale(1);} 50%{transform:scale(1.05);} }
+
+  .hero-tag {
+    display: inline-flex; align-items: center; gap: 8px;
+    font-size: 0.7rem; font-weight: 600;
+    text-transform: uppercase; letter-spacing: 0.14em;
+    color: var(--accent);
+    margin-bottom: 1.5rem;
+    animation: fadeUp 0.8s 0.2s ease both;
+  }
+  .hero-tag::before {
+    content: ''; width: 24px; height: 1.5px; background: var(--accent);
+  }
+
+  .hero-name {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(3rem, 5vw, 5.5rem);
+    font-weight: 700;
+    line-height: 1.05;
+    letter-spacing: -0.02em;
+    color: var(--ink);
+    margin-bottom: 0.4rem;
+    animation: fadeUp 0.8s 0.35s ease both;
+  }
+  .hero-name .line2 {
+    font-style: italic;
+    font-weight: 400;
+    color: var(--ink2);
+  }
+
+  .hero-role {
+    font-size: 1rem;
+    font-weight: 500;
+    color: var(--ink3);
+    margin-bottom: 2rem;
+    letter-spacing: 0.01em;
+    animation: fadeUp 0.8s 0.45s ease both;
+  }
+
+  .hero-desc {
+    font-size: 1.05rem;
+    line-height: 1.75;
+    color: var(--ink2);
+    max-width: 480px;
+    margin-bottom: 2.5rem;
+    animation: fadeUp 0.8s 0.55s ease both;
+  }
+
+  .hero-actions {
+    display: flex; gap: 1rem; align-items: center;
+    animation: fadeUp 0.8s 0.65s ease both;
+  }
+
+  .btn-primary {
+    padding: 14px 32px;
+    background: var(--accent);
+    color: white;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.8rem; font-weight: 600;
+    text-transform: uppercase; letter-spacing: 0.1em;
+    border: none; cursor: none;
+    text-decoration: none;
+    border-radius: 2px;
+    transition: background 0.2s, transform 0.2s;
+    display: inline-block;
+  }
+  .btn-primary:hover { background: var(--ink); transform: translateY(-2px); }
+
+  .btn-ghost {
+    padding: 14px 28px;
+    background: transparent;
+    color: var(--ink);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.8rem; font-weight: 500;
+    text-transform: uppercase; letter-spacing: 0.1em;
+    border: 1.5px solid var(--border2, rgba(26,23,20,0.2));
+    cursor: none;
+    text-decoration: none;
+    border-radius: 2px;
+    transition: border-color 0.2s, color 0.2s, transform 0.2s;
+    display: inline-flex; align-items: center; gap: 8px;
+  }
+  .btn-ghost:hover { border-color: var(--ink); transform: translateY(-2px); }
+
+  .hero-stats {
+    display: flex; gap: 2rem; margin-top: 3rem;
+    animation: fadeUp 0.8s 0.75s ease both;
+  }
+  .stat { }
+  .stat-num {
+    font-family: 'Playfair Display', serif;
+    font-size: 2rem; font-weight: 700;
+    color: var(--ink);
+    line-height: 1;
+  }
+  .stat-num span { color: var(--accent); font-size: 1.2rem; }
+  .stat-label {
+    font-size: 0.72rem; font-weight: 500;
+    text-transform: uppercase; letter-spacing: 0.1em;
+    color: var(--ink3);
+    margin-top: 4px;
+  }
+
+  /* HERO RIGHT - Phone mockup */
+  .hero-visual {
+    display: flex; justify-content: center; align-items: center;
+    position: relative;
+    animation: fadeLeft 1s 0.4s ease both;
+  }
+  @keyframes fadeLeft { from { opacity:0; transform: translateX(60px); } to { opacity:1; transform:none; } }
+  @keyframes fadeUp { from { opacity:0; transform: translateY(30px); } to { opacity:1; transform:none; } }
+
+  .phone-wrap {
+    position: relative;
+    animation: floatPhone 6s ease-in-out infinite;
+  }
+  @keyframes floatPhone {
+    0%,100% { transform: translateY(0) rotate(-2deg); }
+    50% { transform: translateY(-20px) rotate(-2deg); }
+  }
+
+  .phone-frame {
+    width: 280px;
+    background: #1A1714;
+    border-radius: 44px;
+    padding: 12px;
+    box-shadow: 0 40px 80px rgba(26,23,20,0.3), 0 0 0 1px rgba(255,255,255,0.1) inset;
+    position: relative;
+  }
+  .phone-notch {
+    width: 100px; height: 28px;
+    background: #1A1714;
+    border-radius: 0 0 20px 20px;
+    margin: 0 auto 4px;
+    position: absolute; top: 0; left: 50%; transform: translateX(-50%);
+    z-index: 2;
+  }
+  .phone-screen {
+    background: #F8F6F1;
+    border-radius: 36px;
+    overflow: hidden;
+    aspect-ratio: 9/19;
+    position: relative;
+  }
+
+  /* App UI inside phone */
+  .app-ui {
+    width: 100%; height: 100%;
+    display: flex; flex-direction: column;
+    background: #F0EDE6;
+    font-family: 'DM Sans', sans-serif;
+  }
+  .app-header {
+    background: #1A1714;
+    padding: 44px 16px 16px;
+    color: white;
+  }
+  .app-header-top {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 16px;
+  }
+  .app-greeting { font-size: 9px; opacity: 0.6; text-transform: uppercase; letter-spacing: 0.1em; }
+  .app-title { font-size: 13px; font-weight: 600; }
+  .app-avatar {
+    width: 24px; height: 24px;
+    background: var(--accent);
+    border-radius: 50%;
+    font-size: 9px; font-weight: 700; color: white;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .app-metrics {
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+  .metric-card {
+    background: rgba(255,255,255,0.08);
+    border-radius: 10px;
+    padding: 10px;
+  }
+  .metric-label { font-size: 7px; opacity: 0.5; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 4px; }
+  .metric-val { font-size: 14px; font-weight: 700; }
+  .metric-val.green { color: #4CD964; }
+  .metric-val.orange { color: var(--accent2); }
+
+  .app-body { flex: 1; padding: 12px; overflow: hidden; }
+  .app-section-title { font-size: 8px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.12em; color: var(--ink3); margin-bottom: 8px; }
+
+  .mini-chart {
+    display: flex; align-items: flex-end; gap: 3px;
+    height: 50px; margin-bottom: 12px;
+  }
+  .bar {
+    flex: 1; background: var(--bg3);
+    border-radius: 3px 3px 0 0;
+    transition: height 0.5s ease;
+    position: relative;
+  }
+  .bar.active { background: var(--accent); }
+  .bar.med { background: #C9A84C; }
+
+  .order-list { display: flex; flex-direction: column; gap: 6px; }
+  .order-item {
+    background: white;
+    border-radius: 8px;
+    padding: 8px 10px;
+    display: flex; justify-content: space-between; align-items: center;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+  }
+  .order-name { font-size: 8px; font-weight: 600; }
+  .order-status {
+    font-size: 7px; font-weight: 600;
+    padding: 2px 6px; border-radius: 10px;
+  }
+  .order-status.pending { background: #FFF3CD; color: #856404; }
+  .order-status.done { background: #D1FAE5; color: #065F46; }
+
+  .phone-glow {
+    position: absolute;
+    bottom: -40px; left: 50%; transform: translateX(-50%);
+    width: 200px; height: 80px;
+    background: radial-gradient(ellipse, rgba(232,69,10,0.25) 0%, transparent 70%);
+    filter: blur(20px);
+  }
+
+  /* Floating badges */
+  .badge-float {
+    position: absolute;
+    background: white;
+    border-radius: 12px;
+    padding: 10px 14px;
+    box-shadow: var(--shadow-lg);
+    display: flex; align-items: center; gap: 8px;
+    font-size: 0.7rem; font-weight: 600;
+    animation: floatBadge 5s ease-in-out infinite;
+    border: 1px solid var(--border);
+  }
+  .badge-float:nth-child(2) { animation-delay: -2s; }
+  .badge-float .badge-icon { font-size: 1.2rem; }
+  .badge-float.b1 { top: 10%; left: -30px; animation-name: floatBadge1; }
+  .badge-float.b2 { bottom: 20%; right: -20px; animation-name: floatBadge2; }
+  @keyframes floatBadge1 { 0%,100%{transform:translateY(0);} 50%{transform:translateY(-10px);} }
+  @keyframes floatBadge2 { 0%,100%{transform:translateY(0);} 50%{transform:translateY(10px);} }
+
+  /* SECTION COMMON */
+  section { padding: 100px 6vw; position: relative; }
+
+  .section-label {
+    font-size: 0.68rem; font-weight: 600;
+    text-transform: uppercase; letter-spacing: 0.18em;
+    color: var(--accent);
+    margin-bottom: 1rem;
+    display: flex; align-items: center; gap: 12px;
+  }
+  .section-label::before { content: ''; flex: 0 0 30px; height: 1.5px; background: var(--accent); }
+
+  .section-title {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(2rem, 3.5vw, 3.2rem);
+    font-weight: 700; line-height: 1.1;
+    letter-spacing: -0.02em;
+    margin-bottom: 0.5rem;
+  }
+  .section-title em { font-style: italic; color: var(--ink3); font-weight: 400; }
+
+  /* ABOUT */
+  .about { background: var(--bg); }
+  .about-grid {
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 5rem; align-items: center;
+    margin-top: 4rem;
+  }
+  .about-text p {
+    font-size: 1rem; line-height: 1.8;
+    color: var(--ink2); margin-bottom: 1.2rem;
+  }
+  .about-quote {
+    margin-top: 2rem;
+    padding-left: 1.5rem;
+    border-left: 3px solid var(--accent);
+    font-family: 'Playfair Display', serif;
+    font-style: italic;
+    font-size: 1.2rem;
+    line-height: 1.6;
+    color: var(--ink2);
+  }
+
+  .about-info { }
+  .info-item {
+    display: flex; align-items: flex-start; gap: 1rem;
+    padding: 1.2rem 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .info-icon {
+    width: 36px; height: 36px; flex-shrink: 0;
+    background: var(--bg2);
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1rem;
+  }
+  .info-label { font-size: 0.68rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.1em; color: var(--ink3); margin-bottom: 3px; }
+  .info-val { font-size: 0.9rem; font-weight: 500; color: var(--ink); }
+
+  /* SKILLS */
+  .skills-section { background: var(--bg2); }
+  .skills-grid {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 1rem; margin-top: 3rem;
+  }
+  .skill-pill {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1.2rem 1rem;
+    text-align: center;
+    transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+    cursor: default;
+  }
+  .skill-pill:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow);
+    border-color: var(--accent);
+  }
+  .skill-pill .skill-icon { font-size: 1.6rem; margin-bottom: 8px; }
+  .skill-pill .skill-name { font-size: 0.78rem; font-weight: 600; color: var(--ink); }
+  .skill-pill .skill-cat { font-size: 0.66rem; color: var(--ink3); margin-top: 2px; text-transform: uppercase; letter-spacing: 0.08em; }
+
+  /* PROJECTS */
+  .projects-section { background: var(--bg); }
+  .projects-grid { margin-top: 3rem; display: flex; flex-direction: column; gap: 5rem; }
+
+  .project-card {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4rem;
+    align-items: center;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 24px;
+    padding: 3rem;
+    box-shadow: var(--shadow);
+    transition: box-shadow 0.3s ease, transform 0.3s ease;
+    opacity: 0;
+    transform: translateY(40px);
+    transition: opacity 0.6s ease, transform 0.6s ease, box-shadow 0.3s ease;
+  }
+  .project-card.visible { opacity: 1; transform: translateY(0); }
+  .project-card:hover { box-shadow: var(--shadow-lg); transform: translateY(-4px); }
+  .project-card.reverse { direction: rtl; }
+  .project-card.reverse > * { direction: ltr; }
+
+  .project-label {
+    font-size: 0.68rem; font-weight: 600;
+    text-transform: uppercase; letter-spacing: 0.14em;
+    color: var(--accent); margin-bottom: 0.8rem;
+  }
+
+  .project-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 2rem; font-weight: 700;
+    line-height: 1.15; margin-bottom: 1rem;
+    letter-spacing: -0.01em;
+  }
+
+  .project-desc {
+    font-size: 0.92rem; line-height: 1.75;
+    color: var(--ink2); margin-bottom: 1.5rem;
+  }
+
+  .project-features {
+    list-style: none;
+    display: flex; flex-direction: column; gap: 6px;
+    margin-bottom: 2rem;
+  }
+  .project-features li {
+    font-size: 0.82rem; color: var(--ink2);
+    display: flex; align-items: center; gap: 10px;
+  }
+  .project-features li::before {
+    content: '';
+    width: 6px; height: 6px;
+    background: var(--accent);
+    border-radius: 50%; flex-shrink: 0;
+  }
+
+  .project-tags {
+    display: flex; flex-wrap: wrap; gap: 6px;
+  }
+  .tag {
+    font-size: 0.68rem; font-weight: 600;
+    text-transform: uppercase; letter-spacing: 0.08em;
+    padding: 4px 10px;
+    background: var(--bg2);
+    color: var(--ink3);
+    border-radius: 4px;
+    border: 1px solid var(--border);
+  }
+
+  /* App screenshot mockup */
+  .project-visual {
+    position: relative;
+    display: flex; justify-content: center;
+  }
+
+  .device-mockup {
+    width: 220px;
+    background: #1A1714;
+    border-radius: 36px;
+    padding: 10px;
+    box-shadow: 0 30px 60px rgba(26,23,20,0.25);
+    position: relative;
+    animation: floatSlow 7s ease-in-out infinite;
+  }
+  @keyframes floatSlow { 0%,100%{transform:translateY(0) rotate(1deg);} 50%{transform:translateY(-15px) rotate(1deg);} }
+
+  .device-screen {
+    background: white;
+    border-radius: 28px;
+    overflow: hidden;
+    aspect-ratio: 9/18;
+  }
+
+  /* Awisso app mock */
+  .awisso-screen {
+    width: 100%; height: 100%;
+    background: #0D0D0D;
+    display: flex; flex-direction: column;
+    font-family: 'DM Sans', sans-serif;
+  }
+  .aw-header {
+    padding: 32px 12px 16px;
+    background: linear-gradient(135deg, #1A1A1A 0%, #0D0D0D 100%);
+  }
+  .aw-brand { font-size: 11px; font-weight: 700; color: white; letter-spacing: 0.05em; }
+  .aw-subtitle { font-size: 7px; color: rgba(255,255,255,0.4); margin-top: 2px; }
+  .aw-kpis {
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 6px; margin-top: 10px;
+  }
+  .aw-kpi {
+    background: rgba(255,255,255,0.07);
+    border-radius: 8px; padding: 8px;
+  }
+  .aw-kpi-label { font-size: 6px; color: rgba(255,255,255,0.4); text-transform: uppercase; letter-spacing: 0.1em; }
+  .aw-kpi-val { font-size: 12px; font-weight: 700; color: white; margin-top: 2px; }
+  .aw-kpi-trend { font-size: 6px; color: #4CD964; margin-top: 1px; }
+  .aw-body { flex: 1; padding: 10px 12px; background: #F5F3EE; }
+  .aw-orders-title { font-size: 8px; font-weight: 700; color: #1A1714; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 8px; }
+  .aw-chart-bars {
+    display: flex; align-items: flex-end; gap: 3px;
+    height: 40px; margin-bottom: 10px;
+  }
+  .aw-bar { flex: 1; background: #E8E3D8; border-radius: 2px 2px 0 0; }
+  .aw-bar.hi { background: #E8450A; }
+  .aw-bar.mid { background: #C9A84C; }
+  .aw-orders { display: flex; flex-direction: column; gap: 5px; }
+  .aw-order {
+    background: white; border-radius: 6px; padding: 6px 8px;
+    display: flex; justify-content: space-between; align-items: center;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+  }
+  .aw-order-info .aw-order-name { font-size: 7px; font-weight: 600; color: #1A1714; }
+  .aw-order-info .aw-order-id { font-size: 6px; color: #7A7468; }
+  .aw-badge { font-size: 6px; font-weight: 700; padding: 2px 5px; border-radius: 6px; }
+  .aw-badge.new { background: #FFF3CD; color: #856404; }
+  .aw-badge.ok { background: #D1FAE5; color: #065F46; }
+
+  /* Active Tribe app mock */
+  .active-screen {
+    width: 100%; height: 100%;
+    background: #0A1628;
+    display: flex; flex-direction: column;
+    font-family: 'DM Sans', sans-serif;
+  }
+  .at-header {
+    padding: 32px 12px 16px;
+    background: linear-gradient(160deg, #0A1628 0%, #1A2B4A 100%);
+  }
+  .at-brand { font-size: 10px; font-weight: 800; color: white; letter-spacing: 0.08em; text-transform: uppercase; }
+  .at-tagline { font-size: 7px; color: rgba(255,255,255,0.4); margin-top: 2px; }
+  .at-stats {
+    display: grid; grid-template-columns: 1fr 1fr 1fr;
+    gap: 5px; margin-top: 10px;
+  }
+  .at-stat {
+    background: rgba(255,255,255,0.07);
+    border-radius: 6px; padding: 6px; text-align: center;
+  }
+  .at-stat-val { font-size: 11px; font-weight: 800; color: #4CD9FF; }
+  .at-stat-label { font-size: 5.5px; color: rgba(255,255,255,0.4); text-transform: uppercase; }
+  .at-body { flex: 1; padding: 10px 12px; background: #F5F3EE; }
+  .at-map-placeholder {
+    width: 100%; height: 55px;
+    background: linear-gradient(135deg, #C8E6C9, #A5D6A7);
+    border-radius: 8px; margin-bottom: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 7px; color: #2E7D32; font-weight: 600;
+    position: relative; overflow: hidden;
+  }
+  .at-map-placeholder::after {
+    content: '📍';
+    position: absolute; font-size: 12px;
+    animation: pinBounce 2s ease-in-out infinite;
+  }
+  @keyframes pinBounce { 0%,100%{transform:translateY(0);} 50%{transform:translateY(-4px);} }
+  .at-stations-title { font-size: 8px; font-weight: 700; color: #1A1714; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 6px; }
+  .at-stations { display: flex; flex-direction: column; gap: 4px; }
+  .at-station {
+    background: white; border-radius: 6px; padding: 6px 8px;
+    display: flex; justify-content: space-between; align-items: center;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+  }
+  .at-station-name { font-size: 7px; font-weight: 600; color: #1A1714; }
+  .at-station-dist { font-size: 6px; color: #7A7468; }
+  .at-available { font-size: 6px; font-weight: 700; color: #065F46; background: #D1FAE5; padding: 2px 5px; border-radius: 4px; }
+
+  .device-glow {
+    position: absolute; bottom: -30px; left: 50%; transform: translateX(-50%);
+    width: 160px; height: 60px;
+    background: radial-gradient(ellipse, rgba(232,69,10,0.2) 0%, transparent 70%);
+    filter: blur(15px);
+  }
+  .device-glow.blue {
+    background: radial-gradient(ellipse, rgba(76,217,255,0.2) 0%, transparent 70%);
+  }
+
+  /* CONTACT */
+  .contact-section { background: var(--ink); color: white; }
+  .contact-section .section-label { color: var(--accent2); }
+  .contact-section .section-label::before { background: var(--accent2); }
+  .contact-section .section-title { color: white; }
+
+  .contact-grid {
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 5rem; margin-top: 4rem; align-items: center;
+  }
+
+  .contact-text p {
+    font-size: 1rem; line-height: 1.75;
+    color: rgba(255,255,255,0.6); margin-bottom: 2rem;
+  }
+
+  .contact-links { display: flex; flex-direction: column; gap: 1rem; }
+  .contact-link {
+    display: flex; align-items: center; gap: 1rem;
+    padding: 1rem 1.2rem;
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 12px;
+    color: white; text-decoration: none;
+    font-size: 0.88rem; font-weight: 500;
+    transition: background 0.2s, border-color 0.2s, transform 0.2s;
+  }
+  .contact-link:hover { background: rgba(232,69,10,0.15); border-color: var(--accent); transform: translateX(4px); }
+  .contact-link .cl-icon { font-size: 1.2rem; }
+  .contact-link .cl-text { }
+  .contact-link .cl-label { font-size: 0.68rem; opacity: 0.5; text-transform: uppercase; letter-spacing: 0.1em; }
+  .contact-link .cl-val { font-size: 0.88rem; font-weight: 600; }
+
+  .contact-right {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 20px;
+    padding: 2.5rem;
+  }
+  .contact-right h3 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.4rem; margin-bottom: 0.5rem;
+  }
+  .contact-right p { font-size: 0.85rem; color: rgba(255,255,255,0.5); margin-bottom: 1.5rem; line-height: 1.6; }
+
+  .form-group { margin-bottom: 1rem; }
+  .form-group input, .form-group textarea {
+    width: 100%;
+    background: rgba(255,255,255,0.07);
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 8px;
+    padding: 12px 16px;
+    color: white; font-family: 'DM Sans', sans-serif;
+    font-size: 0.88rem;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  .form-group input::placeholder, .form-group textarea::placeholder { color: rgba(255,255,255,0.3); }
+  .form-group input:focus, .form-group textarea:focus { border-color: var(--accent); }
+  .form-group textarea { resize: vertical; min-height: 100px; }
+
+  .form-submit {
+    width: 100%;
+    padding: 14px;
+    background: var(--accent);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.82rem; font-weight: 600;
+    text-transform: uppercase; letter-spacing: 0.1em;
+    cursor: none;
+    transition: background 0.2s;
+  }
+  .form-submit:hover { background: var(--accent2); }
+
+  /* FOOTER */
+  footer {
+    background: var(--ink);
+    border-top: 1px solid rgba(255,255,255,0.06);
+    padding: 2rem 6vw;
+    display: flex; justify-content: space-between; align-items: center;
+    color: rgba(255,255,255,0.4);
+    font-size: 0.78rem;
+  }
+  footer .footer-brand {
+    font-family: 'Playfair Display', serif;
+    font-size: 1rem; font-weight: 600;
+    color: white;
+  }
+  footer .footer-brand span { color: var(--accent); }
+
+  /* SCROLLBAR */
+  ::-webkit-scrollbar { width: 4px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: var(--accent); border-radius: 2px; }
+
+  /* DIVIDER */
+  .divider {
+    width: 100%;
+    height: 1px;
+    background: var(--border);
+    margin: 2rem 0;
+  }
+
+  /* SCROLL REVEAL */
+  .reveal {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity 0.7s ease, transform 0.7s ease;
+  }
+  .reveal.visible { opacity: 1; transform: none; }
+  .reveal.delay-1 { transition-delay: 0.1s; }
+  .reveal.delay-2 { transition-delay: 0.2s; }
+  .reveal.delay-3 { transition-delay: 0.3s; }
+
+  @media (max-width: 900px) {
+    .hero { grid-template-columns: 1fr; padding-top: 100px; }
+    .hero-visual { display: none; }
+    .about-grid, .project-card, .contact-grid { grid-template-columns: 1fr; }
+    .project-card.reverse { direction: ltr; }
+    nav .nav-links { display: none; }
+  }
+</style>
 </head>
-
 <body>
-  <div class="container">
 
-    <h1>Hi, I'm Ichrak 👩‍💻</h1>
-    <p class="subtitle">iOS Developer specialized in SwiftUI</p>
+<div class="cursor" id="cursor"></div>
+<div class="cursor-ring" id="cursorRing"></div>
 
-    <div class="card">
-      <h2>About Me</h2>
-      <p>I build modern iOS applications using SwiftUI with clean UI, smooth animations, and real-time features.</p>
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">IBN<span>.</span></div>
+  <ul class="nav-links">
+    <li><a href="#about">About</a></li>
+    <li><a href="#skills">Skills</a></li>
+    <li><a href="#projects">Projects</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+  <a href="mailto:ichraq.bennejma@gmail.com" class="nav-cta nav-links a">Hire Me</a>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-bg-shape"></div>
+  <div class="hero-bg-shape2"></div>
+
+  <div class="hero-content">
+    <div class="hero-tag">iOS SwiftUI Developer</div>
+    <h1 class="hero-name">
+      Ichrak<br>
+      <span class="line2">Ben Nejma</span>
+    </h1>
+    <p class="hero-role">📍 Tunisia &nbsp;·&nbsp; 4+ Years Experience</p>
+    <p class="hero-desc">
+      I build polished, high-performance iOS applications with SwiftUI — from business analytics dashboards to booking systems, fitness apps, and real-time interactive experiences.
+    </p>
+    <div class="hero-actions">
+      <a href="#projects" class="btn-primary">View My Work</a>
+      <a href="mailto:ichraq.bennejma@gmail.com" class="btn-ghost">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+        Get In Touch
+      </a>
     </div>
-
-    <div class="card">
-      <h2>Projects</h2>
-
-      <h3>LuggDriver App 🚚</h3>
-      <p>Real-time delivery tracking app with map integration.</p>
-      <span class="tag">SwiftUI</span>
-      <span class="tag">MapKit</span>
-
-      <h3>Instagram Clone 📱</h3>
-      <p>Social media UI with feed, stories, and profile system.</p>
-      <span class="tag">SwiftUI</span>
+    <div class="hero-stats">
+      <div class="stat">
+        <div class="stat-num">4<span>+</span></div>
+        <div class="stat-label">Years Exp.</div>
+      </div>
+      <div class="stat">
+        <div class="stat-num">10<span>+</span></div>
+        <div class="stat-label">Apps Built</div>
+      </div>
+      <div class="stat">
+        <div class="stat-num">2</div>
+        <div class="stat-label">Featured Projects</div>
+      </div>
     </div>
-
-    <div class="card">
-      <h2>Contact</h2>
-      <p>Email: your@email.com</p>
-    </div>
-
   </div>
+
+  <div class="hero-visual">
+    <div class="phone-wrap">
+      <div class="badge-float b1">
+        <span class="badge-icon">⚡</span>
+        <div>
+          <div style="font-size:0.65rem;color:var(--ink3);text-transform:uppercase;letter-spacing:.08em;">Today's Sales</div>
+          <div style="font-weight:700;font-size:0.85rem;">+24.5%</div>
+        </div>
+      </div>
+
+      <div class="phone-frame">
+        <div class="phone-notch"></div>
+        <div class="phone-screen">
+          <div class="app-ui">
+            <div class="app-header">
+              <div class="app-header-top">
+                <div>
+                  <div class="app-greeting">Good morning</div>
+                  <div class="app-title">Awisso+</div>
+                </div>
+                <div class="app-avatar">I</div>
+              </div>
+              <div class="app-metrics">
+                <div class="metric-card">
+                  <div class="metric-label">Revenue</div>
+                  <div class="metric-val green">2,847 TND</div>
+                </div>
+                <div class="metric-card">
+                  <div class="metric-label">Orders</div>
+                  <div class="metric-val orange">143</div>
+                </div>
+              </div>
+            </div>
+            <div class="app-body">
+              <div class="app-section-title">Weekly Overview</div>
+              <div class="mini-chart">
+                <div class="bar" style="height:40%"></div>
+                <div class="bar med" style="height:55%"></div>
+                <div class="bar" style="height:35%"></div>
+                <div class="bar active" style="height:80%"></div>
+                <div class="bar" style="height:60%"></div>
+                <div class="bar med" style="height:70%"></div>
+                <div class="bar active" style="height:90%"></div>
+              </div>
+              <div class="app-section-title">Recent Orders</div>
+              <div class="order-list">
+                <div class="order-item">
+                  <div>
+                    <div class="order-name">Order #2041</div>
+                    <div style="font-size:7px;color:var(--ink3)">Sana M. · 78 TND</div>
+                  </div>
+                  <div class="order-status pending">Pending</div>
+                </div>
+                <div class="order-item">
+                  <div>
+                    <div class="order-name">Order #2040</div>
+                    <div style="font-size:7px;color:var(--ink3)">Yassine K. · 124 TND</div>
+                  </div>
+                  <div class="order-status done">Done</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="phone-glow"></div>
+
+      <div class="badge-float b2">
+        <span class="badge-icon">📦</span>
+        <div>
+          <div style="font-size:0.65rem;color:var(--ink3);text-transform:uppercase;letter-spacing:.08em;">New Order</div>
+          <div style="font-weight:700;font-size:0.82rem;">Just now</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ABOUT -->
+<section class="about" id="about">
+  <div class="section-label">About Me</div>
+  <h2 class="section-title">Crafting iOS experiences<br><em>that people love to use</em></h2>
+  <div class="about-grid">
+    <div class="about-text reveal">
+      <p>I'm an iOS developer based in Tunisia with over 4 years of experience building native apps using Swift and SwiftUI. I specialize in creating applications that are both technically robust and visually exceptional.</p>
+      <p>From real-time analytics dashboards to smart fitness ecosystems, my work spans diverse domains — always with a focus on clean architecture, smooth animations, and seamless user experiences.</p>
+      <blockquote class="about-quote">
+        "Great apps are built at the intersection of clean code and beautiful design."
+      </blockquote>
+    </div>
+    <div class="about-info reveal delay-2">
+      <div class="info-item">
+        <div class="info-icon">📍</div>
+        <div>
+          <div class="info-label">Location</div>
+          <div class="info-val">Tunisia</div>
+        </div>
+      </div>
+      <div class="info-item">
+        <div class="info-icon">📱</div>
+        <div>
+          <div class="info-label">Specialization</div>
+          <div class="info-val">iOS SwiftUI Development</div>
+        </div>
+      </div>
+      <div class="info-item">
+        <div class="info-icon">⏱️</div>
+        <div>
+          <div class="info-label">Experience</div>
+          <div class="info-val">4+ Years</div>
+        </div>
+      </div>
+      <div class="info-item">
+        <div class="info-icon">✉️</div>
+        <div>
+          <div class="info-label">Email</div>
+          <div class="info-val">ichraq.bennejma@gmail.com</div>
+        </div>
+      </div>
+      <div class="info-item">
+        <div class="info-icon">🚀</div>
+        <div>
+          <div class="info-label">Available For</div>
+          <div class="info-val">Freelance & Full-time</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SKILLS -->
+<section class="skills-section" id="skills">
+  <div class="section-label">Technical Skills</div>
+  <h2 class="section-title">Tools & <em>Technologies</em></h2>
+
+  <div class="skills-grid">
+    <div class="skill-pill reveal delay-1">
+      <div class="skill-icon">🍎</div>
+      <div class="skill-name">Swift</div>
+      <div class="skill-cat">Core Language</div>
+    </div>
+    <div class="skill-pill reveal delay-1">
+      <div class="skill-icon">🎨</div>
+      <div class="skill-name">SwiftUI</div>
+      <div class="skill-cat">UI Framework</div>
+    </div>
+    <div class="skill-pill reveal delay-2">
+      <div class="skill-icon">📐</div>
+      <div class="skill-name">UIKit</div>
+      <div class="skill-cat">UI Framework</div>
+    </div>
+    <div class="skill-pill reveal delay-2">
+      <div class="skill-icon">🏗️</div>
+      <div class="skill-name">MVVM</div>
+      <div class="skill-cat">Architecture</div>
+    </div>
+    <div class="skill-pill reveal delay-3">
+      <div class="skill-icon">🌐</div>
+      <div class="skill-name">Alamofire</div>
+      <div class="skill-cat">Networking</div>
+    </div>
+    <div class="skill-pill reveal delay-1">
+      <div class="skill-icon">🔗</div>
+      <div class="skill-name">Combine</div>
+      <div class="skill-cat">Reactive</div>
+    </div>
+    <div class="skill-pill reveal delay-2">
+      <div class="skill-icon">🔥</div>
+      <div class="skill-name">Firebase</div>
+      <div class="skill-cat">Backend</div>
+    </div>
+    <div class="skill-pill reveal delay-1">
+      <div class="skill-icon">📊</div>
+      <div class="skill-name">Custom Charts</div>
+      <div class="skill-cat">Data Viz</div>
+    </div>
+    <div class="skill-pill reveal delay-2">
+      <div class="skill-icon">✨</div>
+      <div class="skill-name">Lottie</div>
+      <div class="skill-cat">Animation</div>
+    </div>
+    <div class="skill-pill reveal delay-3">
+      <div class="skill-icon">🔌</div>
+      <div class="skill-name">REST APIs</div>
+      <div class="skill-cat">Integration</div>
+    </div>
+    <div class="skill-pill reveal delay-1">
+      <div class="skill-icon">🛠️</div>
+      <div class="skill-name">Xcode</div>
+      <div class="skill-cat">IDE</div>
+    </div>
+    <div class="skill-pill reveal delay-2">
+      <div class="skill-icon">📦</div>
+      <div class="skill-name">Git</div>
+      <div class="skill-cat">Version Control</div>
+    </div>
+  </div>
+</section>
+
+<!-- PROJECTS -->
+<section class="projects-section" id="projects">
+  <div class="section-label">Featured Projects</div>
+  <h2 class="section-title">Work that <em>speaks for itself</em></h2>
+
+  <div class="projects-grid">
+
+    <!-- AWISSO+ -->
+    <div class="project-card reveal">
+      <div class="project-info">
+        <div class="project-label">🛍️ E-Commerce · Analytics · Live Support</div>
+        <h3 class="project-title">Awisso+</h3>
+        <p class="project-desc">
+          A powerful iOS application designed for online store owners — providing real-time sales analytics, order management, and live customer support in one unified experience.
+        </p>
+        <ul class="project-features">
+          <li>Sales & orders analytics dashboard with interactive charts</li>
+          <li>Accept or cancel customer orders in real-time</li>
+          <li>Custom calendar component for order tracking</li>
+          <li>Live customer support via chat SDK integration</li>
+          <li>Smooth, modern SwiftUI UI with fluid animations</li>
+        </ul>
+        <div class="project-tags">
+          <span class="tag">SwiftUI</span>
+          <span class="tag">MVVM</span>
+          <span class="tag">Custom Charts</span>
+          <span class="tag">Combine</span>
+          <span class="tag">Chat SDK</span>
+          <span class="tag">REST APIs</span>
+        </div>
+      </div>
+      <div class="project-visual">
+        <div class="device-mockup">
+          <div class="device-screen">
+            <div class="awisso-screen">
+              <div class="aw-header">
+                <div class="aw-brand">Awisso+</div>
+                <div class="aw-subtitle">Store Analytics Dashboard</div>
+                <div class="aw-kpis">
+                  <div class="aw-kpi">
+                    <div class="aw-kpi-label">Revenue</div>
+                    <div class="aw-kpi-val">8,240</div>
+                    <div class="aw-kpi-trend">↑ 18.3% this week</div>
+                  </div>
+                  <div class="aw-kpi">
+                    <div class="aw-kpi-label">Orders</div>
+                    <div class="aw-kpi-val">312</div>
+                    <div class="aw-kpi-trend">↑ 24 today</div>
+                  </div>
+                </div>
+              </div>
+              <div class="aw-body">
+                <div class="aw-orders-title">Weekly Sales</div>
+                <div class="aw-chart-bars">
+                  <div class="aw-bar" style="height:35%"></div>
+                  <div class="aw-bar mid" style="height:50%"></div>
+                  <div class="aw-bar" style="height:40%"></div>
+                  <div class="aw-bar hi" style="height:85%"></div>
+                  <div class="aw-bar mid" style="height:65%"></div>
+                  <div class="aw-bar hi" style="height:75%"></div>
+                  <div class="aw-bar" style="height:55%"></div>
+                </div>
+                <div class="aw-orders-title">Recent Orders</div>
+                <div class="aw-orders">
+                  <div class="aw-order">
+                    <div class="aw-order-info">
+                      <div class="aw-order-name">Order #3021</div>
+                      <div class="aw-order-id">Amira B. · 145 TND</div>
+                    </div>
+                    <div class="aw-badge new">New</div>
+                  </div>
+                  <div class="aw-order">
+                    <div class="aw-order-info">
+                      <div class="aw-order-name">Order #3020</div>
+                      <div class="aw-order-id">Khalil H. · 89 TND</div>
+                    </div>
+                    <div class="aw-badge ok">Done</div>
+                  </div>
+                  <div class="aw-order">
+                    <div class="aw-order-info">
+                      <div class="aw-order-name">Order #3019</div>
+                      <div class="aw-order-id">Nour T. · 210 TND</div>
+                    </div>
+                    <div class="aw-badge ok">Done</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="device-glow"></div>
+      </div>
+    </div>
+
+    <!-- ACTIVE TRIBE -->
+    <div class="project-card reverse reveal delay-2">
+      <div class="project-info">
+        <div class="project-label">🏋️ Health & Fitness · Smart Locker · Booking</div>
+        <h3 class="project-title">Active Tribe</h3>
+        <p class="project-desc">
+          A health & fitness app offering an innovative outdoor workout experience with GymStation — a connected smart locker system that brings the gym to the streets of Tunisia.
+        </p>
+        <ul class="project-features">
+          <li>Smart equipment integration with connected GymStation lockers</li>
+          <li>Booking system for outdoor workout sessions</li>
+          <li>Workout tracking and performance history</li>
+          <li>Location-based locker access via GPS</li>
+          <li>Seamless urban fitness experience</li>
+        </ul>
+        <div class="project-tags">
+          <span class="tag">SwiftUI</span>
+          <span class="tag">MVVM</span>
+          <span class="tag">Firebase</span>
+          <span class="tag">MapKit</span>
+          <span class="tag">Lottie</span>
+          <span class="tag">UserDefaults</span>
+        </div>
+      </div>
+      <div class="project-visual">
+        <div class="device-mockup" style="animation-direction:reverse;">
+          <div class="device-screen">
+            <div class="active-screen">
+              <div class="at-header">
+                <div class="at-brand">Active Tribe</div>
+                <div class="at-tagline">Urban Fitness Ecosystem</div>
+                <div class="at-stats">
+                  <div class="at-stat">
+                    <div class="at-stat-val">12</div>
+                    <div class="at-stat-label">Stations</div>
+                  </div>
+                  <div class="at-stat">
+                    <div class="at-stat-val">847</div>
+                    <div class="at-stat-label">Members</div>
+                  </div>
+                  <div class="at-stat">
+                    <div class="at-stat-val">3.2k</div>
+                    <div class="at-stat-label">Sessions</div>
+                  </div>
+                </div>
+              </div>
+              <div class="at-body">
+                <div class="at-map-placeholder">
+                  Tunis — Nearby Stations
+                </div>
+                <div class="at-stations-title">Closest GymStations</div>
+                <div class="at-stations">
+                  <div class="at-station">
+                    <div>
+                      <div class="at-station-name">GymStation Lac</div>
+                      <div class="at-station-dist">0.3 km away</div>
+                    </div>
+                    <div class="at-available">Open</div>
+                  </div>
+                  <div class="at-station">
+                    <div>
+                      <div class="at-station-name">GymStation Bardo</div>
+                      <div class="at-station-dist">1.1 km away</div>
+                    </div>
+                    <div class="at-available">Open</div>
+                  </div>
+                  <div class="at-station">
+                    <div>
+                      <div class="at-station-name">GymStation Menzah</div>
+                      <div class="at-station-dist">2.4 km away</div>
+                    </div>
+                    <div class="at-available">Open</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="device-glow blue"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section class="contact-section" id="contact">
+  <div class="section-label">Get In Touch</div>
+  <h2 class="section-title">Let's build something<br><em style="color:rgba(255,255,255,0.5)">remarkable together</em></h2>
+
+  <div class="contact-grid">
+    <div class="contact-text reveal">
+      <p>I'm open to new opportunities, freelance projects, and collaborations. Whether you have a specific project in mind or just want to talk iOS development, I'd love to hear from you.</p>
+      <div class="contact-links">
+        <a href="mailto:ichraq.bennejma@gmail.com" class="contact-link">
+          <span class="cl-icon">✉️</span>
+          <div class="cl-text">
+            <div class="cl-label">Email</div>
+            <div class="cl-val">ichraq.bennejma@gmail.com</div>
+          </div>
+        </a>
+        <a href="#" class="contact-link">
+          <span class="cl-icon">📍</span>
+          <div class="cl-text">
+            <div class="cl-label">Location</div>
+            <div class="cl-val">Tunisia — Available Remotely</div>
+          </div>
+        </a>
+        <a href="#" class="contact-link">
+          <span class="cl-icon">💼</span>
+          <div class="cl-text">
+            <div class="cl-label">LinkedIn</div>
+            <div class="cl-val">Ichrak Ben Nejma</div>
+          </div>
+        </a>
+      </div>
+    </div>
+
+    <div class="contact-right reveal delay-2">
+      <h3>Send a Message</h3>
+      <p>Have a project in mind? Drop me a line and I'll get back to you within 24 hours.</p>
+      <div class="form-group">
+        <input type="text" placeholder="Your Name">
+      </div>
+      <div class="form-group">
+        <input type="email" placeholder="Your Email">
+      </div>
+      <div class="form-group">
+        <textarea placeholder="Tell me about your project..."></textarea>
+      </div>
+      <button class="form-submit">Send Message →</button>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-brand">IBN<span>.</span></div>
+  <div>© 2025 Ichrak Ben Nejma · iOS SwiftUI Developer</div>
+  <div>Built with ❤️ in Tunisia</div>
+</footer>
+
+<script>
+  // Custom cursor
+  const cursor = document.getElementById('cursor');
+  const ring = document.getElementById('cursorRing');
+  let mouseX = 0, mouseY = 0;
+  let ringX = 0, ringY = 0;
+
+  document.addEventListener('mousemove', e => {
+    mouseX = e.clientX; mouseY = e.clientY;
+    cursor.style.left = mouseX + 'px';
+    cursor.style.top = mouseY + 'px';
+  });
+
+  // Smooth ring follow
+  function animateRing() {
+    ringX += (mouseX - ringX) * 0.12;
+    ringY += (mouseY - ringY) * 0.12;
+    ring.style.left = ringX + 'px';
+    ring.style.top = ringY + 'px';
+    requestAnimationFrame(animateRing);
+  }
+  animateRing();
+
+  // Hover effect
+  const hoverEls = document.querySelectorAll('a, button, .skill-pill, .project-card');
+  hoverEls.forEach(el => {
+    el.addEventListener('mouseenter', () => {
+      ring.classList.add('expand');
+      cursor.style.transform = 'translate(-50%,-50%) scale(0.5)';
+    });
+    el.addEventListener('mouseleave', () => {
+      ring.classList.remove('expand');
+      cursor.style.transform = 'translate(-50%,-50%) scale(1)';
+    });
+  });
+
+  // Scroll reveal
+  const reveals = document.querySelectorAll('.reveal, .project-card');
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+      }
+    });
+  }, { threshold: 0.1, rootMargin: '0px 0px -60px 0px' });
+
+  reveals.forEach(el => observer.observe(el));
+
+  // Nav active state on scroll
+  const sections = document.querySelectorAll('section[id]');
+  const navLinks = document.querySelectorAll('.nav-links a');
+  window.addEventListener('scroll', () => {
+    let current = '';
+    sections.forEach(section => {
+      if (window.scrollY >= section.offsetTop - 100) {
+        current = section.getAttribute('id');
+      }
+    });
+    navLinks.forEach(link => {
+      link.style.color = link.getAttribute('href') === `#${current}` ? 'var(--ink)' : '';
+    });
+  });
+
+  // Animate chart bars on load
+  window.addEventListener('load', () => {
+    const bars = document.querySelectorAll('.bar, .aw-bar');
+    bars.forEach((bar, i) => {
+      const h = bar.style.height;
+      bar.style.height = '0';
+      setTimeout(() => {
+        bar.style.transition = 'height 0.8s cubic-bezier(.34,1.56,.64,1)';
+        bar.style.height = h;
+      }, 800 + i * 60);
+    });
+  });
+</script>
 </body>
 </html>
